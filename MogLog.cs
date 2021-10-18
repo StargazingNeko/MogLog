@@ -1,36 +1,40 @@
-﻿using Dalamud.Plugin;
+﻿using System.Reflection;
+using Dalamud.Game.Gui;
+using Dalamud.IoC;
+using Dalamud.Logging;
+using Dalamud.Plugin;
 
 namespace MogLog
 {
     public class MogLog : IDalamudPlugin
     {
-        private DalamudPluginInterface PluginInterface { get; set; }
-        private Configuration Config { get; set; }
+        private DalamudPluginInterface PluginInterface { get; init; }
+
+        [PluginService]
+        private ChatGui ChatGui { get; init; }
+
+
+        private Configuration Configuration { get; init; }
 
 
         public string Name => "MogLog";
-        public string AssemblyLocation { get => assemblyLocation; set => assemblyLocation = value; }
-        private string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        public string AssemblyLocation { get; set; } = Assembly.GetExecutingAssembly().Location;
 
-        
 
-        public void Initialize(DalamudPluginInterface pluginInterface)
+        public MogLog(DalamudPluginInterface pluginInterface)
         {
             FileHandler.SetLogDirectory();
 
             this.PluginInterface = pluginInterface;
 
-            this.Config = (Configuration)this.PluginInterface.GetPluginConfig() ?? new Configuration();
-            this.Config.Initialize(this.PluginInterface);
+            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            this.Configuration.Initialize(this.PluginInterface);
 
-            this.PluginInterface.Framework.Gui.Chat.Print("MogLog Loaded!");
+            Chat.Initialize(PluginInterface);
+            FileHandler.Initialize(PluginInterface);
 
-            this.PluginInterface.Framework.Gui.Chat.OnChatMessage += Chat.MessageRecieved;
-        }
-
-        public DalamudPluginInterface GetPluginInterface()
-        {
-            return PluginInterface;
+            PluginLog.Debug("MogLog Loaded!");
+            this.ChatGui.ChatMessage += Chat.MessageRecieved;
         }
 
         public void Dispose()
@@ -42,9 +46,9 @@ namespace MogLog
         {
             if (!disposing) return;
 
-
-            PluginInterface.Framework.Gui.Chat.OnChatMessage -= Chat.MessageRecieved;
+            this.ChatGui.ChatMessage -= Chat.MessageRecieved;
             this.PluginInterface.Dispose();
+            this.ChatGui.Dispose();
         }
     }
 }

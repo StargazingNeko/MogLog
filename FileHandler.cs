@@ -1,4 +1,6 @@
 ﻿using Dalamud.Game.Text;
+using Dalamud.Logging;
+using Dalamud.Plugin;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -7,12 +9,21 @@ namespace MogLog
 {
     public static class FileHandler
     {
-        public static string LogDirectory { get; private set; }
+        public static string? LogDirectory { get; private set; }
         private static DateTime today = DateTime.Today;
-        private static Dalamud.Plugin.DalamudPluginInterface PluginInterface = new MogLog().GetPluginInterface();
+        private static DalamudPluginInterface? PluginInterface;
+        public static void Initialize(DalamudPluginInterface pluginInterface)
+        {
+            PluginInterface = pluginInterface;
+        }
 
         private static void CreateLogDirectory()
         {
+            if (string.IsNullOrEmpty(LogDirectory))
+            {
+                throw new NullReferenceException("/!\\LogDirectory string is null!/!\\");
+            }
+
             if (!Directory.Exists(LogDirectory))
             {
                 Directory.CreateDirectory(LogDirectory);
@@ -48,13 +59,18 @@ namespace MogLog
             }
         }
 
-        public static void SetLogDirectory()
+        public static string? SetLogDirectory()
         {
             if (today != DateTime.Today || string.IsNullOrEmpty(LogDirectory))
             {
                 LogDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\XIVLauncher\\installedPlugins\\MogLog\\Chats\\{DateTime.Today:MM-dd-yyyy}";
                 CreateLogDirectory();
                 today = DateTime.Today;
+                return LogDirectory;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -133,6 +149,7 @@ namespace MogLog
             8749,
             8750,
             8752,
+            8753,
         };
 
         public static async Task WriteToGeneralFile(FFXIVMessage message)
