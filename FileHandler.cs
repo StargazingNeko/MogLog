@@ -21,7 +21,7 @@ namespace MogLog
         {
             if (string.IsNullOrEmpty(LogDirectory))
             {
-                throw new NullReferenceException("/!\\LogDirectory string is null!/!\\");
+                throw new NullReferenceException("LogDirectory string is null!");
             }
 
             if (!Directory.Exists(LogDirectory))
@@ -63,7 +63,7 @@ namespace MogLog
         {
             if (today != DateTime.Today || string.IsNullOrEmpty(LogDirectory))
             {
-                LogDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\XIVLauncher\\installedPlugins\\MogLog\\Chats\\{DateTime.Today:MM-dd-yyyy}";
+                LogDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\XIVLauncher\\MogLog\\Chats\\{DateTime.Today:MM-dd-yyyy}";
                 CreateLogDirectory();
                 today = DateTime.Today;
                 return LogDirectory;

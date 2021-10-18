@@ -13,7 +13,6 @@ namespace MogLog
         [PluginService]
         private ChatGui ChatGui { get; init; }
 
-
         private Configuration Configuration { get; init; }
 
 
@@ -48,7 +47,6 @@ namespace MogLog
 
             this.ChatGui.ChatMessage -= Chat.MessageRecieved;
             this.PluginInterface.Dispose();
-            this.ChatGui.Dispose();
         }
     }
 }

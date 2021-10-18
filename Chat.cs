@@ -28,11 +28,11 @@ namespace MogLog
 
         public static void MessageRecieved(XivChatType ChatType, uint SenderId, ref SeString Sender, ref SeString Message, ref bool IsHandled)
         {
-            if(DateTime.Now.Date != date)
+            if(DateTime.Today != date)
             {
                 PluginLog.Log("New date detected, updating directories...");
                 date = DateTime.Today;
-                PluginLog.Log($"..Done, now using Directory{FileHandler.SetLogDirectory()}");
+                PluginLog.Log($"..done, now using directory {FileHandler.SetLogDirectory()}");
             }
 
             string sender = Sender.TextValue;
